@@ -1,0 +1,67 @@
+tags:
+  - Books
+summary: Endpoint untuk menambahkan buku baru
+description: >
+  Endpoint ini digunakan untuk menambahkan buku baru ke dalam database.
+  Anda harus mengirimkan `title` dan `description` dalam request body.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Harry Potter"
+        description:
+          type: string
+          example: "Novel fantasi tentang penyihir muda"
+      required:
+        - title
+        - description
+responses:
+  201:
+    description: Buku berhasil ditambahkan
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Book created successfully"
+        data:
+          type: object
+          properties:
+            id_books:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: "Harry Potter"
+            description:
+              type: string
+              example: "Novel fantasi tentang penyihir muda"
+            created_at:
+              type: string
+              format: date-time
+              example: "Tue, 02 Apr 2024 12:32:11 GMT"
+  400:
+    description: Request body tidak valid
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Invalid input"
+  500:
+    description: Terjadi kesalahan pada server
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Internal server error"

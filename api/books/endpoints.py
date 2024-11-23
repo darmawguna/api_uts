@@ -3,6 +3,7 @@ import os
 from flask import Blueprint, jsonify, request
 from helper.db_helper import get_connection
 from helper.form_validation import get_form_data
+from flasgger import  swag_from
 
 books_endpoints = Blueprint('books', __name__)
 UPLOAD_FOLDER = "img"
@@ -10,22 +11,70 @@ UPLOAD_FOLDER = "img"
 
 @books_endpoints.route('/read', methods=['GET'])
 def read():
-    """Routes for module get list books"""
+    """
+    Endpoint untuk mendapatkan daftar semua buku
+    ---
+    tags:
+      - Books
+    responses:
+      200:
+        description: Daftar buku berhasil diambil
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "OK"
+            datas:
+              type: array
+              items:
+                type: object
+                properties:
+                  id_books:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: "Harry Potter"
+                  description:
+                    type: string
+                    example: "Novel fantasi"
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "Tue, 02 Apr 2024 12:32:11 GMT"
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "Tue, 02 Apr 2024 12:32:11 GMT"
+    """
+    # Membuat koneksi ke database
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
+    
+    # Query untuk mendapatkan daftar buku
     select_query = "SELECT * FROM tb_books"
     cursor.execute(select_query)
     results = cursor.fetchall()
-    cursor.close()  # Close the cursor after query execution
+    
+    # Menutup cursor dan koneksi
+    cursor.close()
+    connection.close()
+    
+    # Mengembalikan respons dalam format JSON
     return jsonify({"message": "OK", "datas": results}), 200
 
 
+
+
 @books_endpoints.route('/create', methods=['POST'])
+@swag_from('../../stuff/swagger/books/create_books.yml')
 def create():
     """Routes for module create a book"""
     required = get_form_data(["title"])  # use only if the field required
     title = required["title"]
     description = request.form['description']
+    
 
     connection = get_connection()
     cursor = connection.cursor()
